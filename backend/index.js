@@ -22,7 +22,7 @@ app.use(express.json());
 
 // Database connection using pg.Pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,  // Connection string from your database provider
+  connectionString: process.env.DATABASE_URLS,  // Connection string from your database provider
   ssl: {
     rejectUnauthorized: false,  // Required for cloud databases (e.g., Heroku, Neon)
   },
