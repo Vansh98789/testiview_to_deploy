@@ -48,14 +48,14 @@ const Wall = () => {
     const getEmbedCode = () => {
         switch (layout) {
             case "animated":
-                return `<iframe height="800px" id='testimonialto-vansh-test-review-tag-all-light-animated' src="http://localhost:5173/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>`;
+                return `<iframe height="800px" id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>`;
             case "fixed":
                 return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-                        <iframe id='testimonialto-vansh-test-review-tag-all-light' src="http://localhost:5173/wall?layout=fixed" frameborder="0" scrolling="no" width="100%"></iframe>
+                        <iframe id='testimonialto-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=fixed" frameborder="0" scrolling="no" width="100%"></iframe>
                         <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');</script>`;
             case "carousel":
                 return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-                        <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="http://localhost:5173/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
+                        <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
                         <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
             default:
                 return "";
