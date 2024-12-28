@@ -11,7 +11,7 @@ function Signup() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:9878/signup", { email, password });
+            const response = await axios.post("https://testiview-backend.vercel.app/signup", { email, password });
             if (response.status === 201) {
                 
                 navigate("/dashboard")
