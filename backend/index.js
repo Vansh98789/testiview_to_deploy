@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv"; 
 import pg from "pg";
 import cors from "cors";
+import { Pool } from 'pg';
 import bodyParser from "body-parser";
 
 dotenv.config(); 
@@ -22,14 +23,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Database connection
-const db = new pg.Client({
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
-
 db.connect();
 
 // POST request for signup
