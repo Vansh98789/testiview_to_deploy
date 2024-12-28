@@ -23,7 +23,7 @@ const Wall = () => {
             const userId = user?.id; // Get user ID from local storage
 
             try {
-                const response = await fetch(`http://localhost:9878/testimonials?userId=${userId}`);
+                const response = await fetch(`https://testiview-backend.vercel.app/testimonials?userId=${userId}`);
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }
