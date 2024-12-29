@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv'; 
-import { Pool } from 'pg';  // Use Pool for connection pooling
+import pg from 'pg';  // Import the entire pg module
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Database connection using pg.Pool
+const { Pool } = pg;  // Destructure Pool from the imported pg module
 const pool = new Pool({
   connectionString: process.env.DATABASE_URLS,  // Connection string from your database provider
   ssl: {
