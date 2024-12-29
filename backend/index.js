@@ -84,21 +84,38 @@ app.post("/login", async (req, res) => {
 
 // POST request for response submission
 app.post("/response", async (req, res) => {
-  const { user_id, name, experience, specific_change, video_url } = req.body;
-  
+  const { user_id, name, experience, specific_change, video_url, rating } = req.body;
+
+  // Log the received data for debugging purposes
+  console.log("Received data:", req.body);
+
   try {
+    // Step 1: Check if the user exists in the users table
+    const userCheckResult = await pool.query("SELECT 1 FROM users WHERE id = $1", [user_id]);
+    if (userCheckResult.rows.length === 0) {
+      return res.status(400).send("User with the given user_id does not exist.");
+    }
+
     const client = await pool.connect();  // Get a client from the pool
+
+    // Insert the new response into the test_data table
     await client.query(
-      "INSERT INTO test_data (user_id, name, experience, specify_change, video_url) VALUES ($1, $2, $3, $4, $5)",
-      [user_id, name, experience, specific_change, video_url]
+      "INSERT INTO test_data (user_id, author_name, content, rating, video_url) VALUES ($1, $2, $3, $4, $5)",
+      [user_id, name, experience || specific_change, rating, video_url]
     );
+
     client.release();  // Release the client back to the pool
-    res.status(201).send("Your response saved successfully");
+
+    // Send success response
+    res.status(201).send("Your response was saved successfully.");
   } catch (err) {
-    console.error("Error during response saving:", err);
+    // Log error details for debugging
+    console.error("Error during response saving:", err.message);
+    console.error(err.stack);  // This gives the full stack trace for debugging
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 // GET request to fetch testimonials
 app.get("/testimonials", async (req, res) => {
