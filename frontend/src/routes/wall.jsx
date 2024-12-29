@@ -18,23 +18,39 @@ const Wall = () => {
 
     // Fetch testimonials from backend
     useEffect(() => {
-        const fetchTestimonials = async () => {
-            const user = JSON.parse(localStorage.getItem('user'));
-            const userId = user?.id; // Get user ID from local storage
+    const fetchTestimonials = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) {
+            console.error("User ID not found in localStorage");
+            return;
+        }
 
-            try {
-                const response = await fetch(`https://testiview-backend.vercel.app/testimonials?userId=${userId}`);
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data = await response.json();
-                setTestimonials(data);
-            } catch (err) {
-                console.error("Error fetching testimonials:", err);
+        const userId = user.id;
+
+        try {
+            console.log(`Fetching testimonials for userId: ${userId}`); // Log userId
+            const response = await fetch(`https://testiview-backend.vercel.app/testimonials?userId=${userId}`);
+            
+            // Check if the response is OK
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
             }
-        };
-        fetchTestimonials();
-    }, []);
+            
+            // Log the full response for debugging
+            console.log('Response received:', response);
+            
+            const data = await response.json();
+            console.log('Data received from API:', data); // Log the data received from the API
+
+            setTestimonials(data); // Set the testimonials state
+        } catch (err) {
+            console.error("Error fetching testimonials:", err); // Log any errors
+        }
+    };
+    
+    fetchTestimonials();
+}, []);
+
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
