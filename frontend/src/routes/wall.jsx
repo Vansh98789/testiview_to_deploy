@@ -68,7 +68,12 @@ const Wall = () => {
   const getEmbedCode = () => {
     switch (layout) {
       case "animated":
-        return `<iframe height="800px" id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>`;
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>
+<script type="text/javascript">
+    iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
+</script>
+`;
       case "fixed":
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
                 <iframe id='testimonialto-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=fixed" frameborder="0" scrolling="no" width="100%"></iframe>
