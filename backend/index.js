@@ -28,6 +28,10 @@ const pool = new Pool({
     rejectUnauthorized: false,  // Required for cloud databases (e.g., Heroku, Neon)
   },
 });
+// Handle GET requests to the root endpoint
+app.get("/", (req, res) => {
+  res.send("Welcome to the backend API");
+});
 
 // POST request for signup
 app.post("/signup", async (req, res) => {
