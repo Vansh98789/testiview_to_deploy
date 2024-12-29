@@ -69,7 +69,7 @@ function Response() {
             </div>
 
             <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-                <h1 className="text-center text-2xl font-bold">Vansh Business Work</h1>
+                <h1 className="text-center text-2xl font-bold">Review Form</h1>
                 <h2 className="text-center text-xl pt-6 font-bold">Questions</h2>
 
                 <div className="mt-8">
