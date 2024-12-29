@@ -11,7 +11,7 @@ const port = process.env.PORT || 9890;
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:5173',  // Make sure this is your frontend URL
+  origin: 'https://testiview-frontend.vercel.app',  // Make sure this is your frontend URL
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 }));
