@@ -83,6 +83,31 @@ const Wall = () => {
 
   const embedCode = getEmbedCode();
 
+  // Slick Carousel settings
+  const settings = {
+    dots: true, // Show navigation dots
+    infinite: true, // Infinite loop scrolling
+    speed: 500, // Transition speed
+    slidesToShow: 3, // Number of slides to show at once
+    slidesToScroll: 1, // Number of slides to scroll at a time
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2, // 2 slides on medium screens
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1, // 1 slide on smaller screens
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Wall of Testimonials</h1>
@@ -144,7 +169,7 @@ const Wall = () => {
       )}
 
       {layout === "carousel" && (
-        <Slider>
+        <Slider {...settings}>
           {testimonials.length === 0 ? (
             <p>No testimonials available at the moment.</p>
           ) : (
