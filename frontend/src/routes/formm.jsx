@@ -10,7 +10,7 @@ function Formm(){
     
     <div className="flex flex-col items-center pt-[3rem] ">
     <img src={imggg} className="w-[4rem] h-[4rem] rounded-full" alt="Description" />
-    <h1 className="text-center text-2xl font-bold">Vansh Business Work</h1>
+    <h1 className="text-center text-2xl font-bold">Review Form</h1>
     <h2 className="text-center text-xl pt-[3rem] font-bold">Questions</h2>
     <h2 className="text-center pt-[0.2rem] text-lg">Please specify your name?</h2>
     <h2 className="text-center pt-[0.2rem] text-lg">Please specify the work we have done for you?</h2>
