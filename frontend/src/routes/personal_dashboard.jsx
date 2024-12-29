@@ -23,7 +23,7 @@ const PersonalDashboard = ({ setIsLogin }) => {
     return (
         <>
             <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
-                <h1 className="text-3xl font-bold text-center mb-4">Vansh Test Review</h1>
+                <h1 className="text-3xl font-bold text-center mb-4">Personal Dashboard</h1>
                 <p className="text-center text-lg mb-6">
                     Your space form URL: 
                     <a href="https://testiview-frontend.vercel.app/formm" className="text-blue-600 underline"> https://testiview-frontend.vercel.app/formm</a>
