@@ -89,8 +89,8 @@ const Wall = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {testimonials.map((testimonial, index) => (
                         <div key={index} className="bg-white p-4 rounded-lg shadow">
-                            <p className="font-semibold">{testimonial.experience}</p>
-                            <p className="text-gray-600">- {testimonial.name}</p>
+                            <p className="font-semibold">{testimonial.content}</p>
+                            <p className="text-gray-600">- {testimonial.author_name}</p>
                             {testimonial.video_url && (
                                 <div className="mt-4">
                                     <ReactPlayer
@@ -113,8 +113,8 @@ const Wall = () => {
                                 key={index} 
                                 className="bg-purple-100 p-4 rounded-lg shadow-lg animate-slide-up w-1/4 mx-2 my-4"
                             >
-                                <p className="font-bold text-purple-700">{testimonial.experience}</p>
-                                <p className="text-purple-600">- {testimonial.name}</p>
+                                <p className="font-bold text-purple-700">{testimonial.content}</p>
+                                <p className="text-purple-600">- {testimonial.author_name}</p>
                                 {testimonial.video_url && (
                                     <div className="mt-4">
                                         <ReactPlayer
@@ -134,8 +134,8 @@ const Wall = () => {
                 <Slider>
                     {testimonials.map((testimonial, index) => (
                         <div key={index} className="bg-gray-100 p-6 rounded-lg shadow-lg">
-                            <p className="font-semibold">{testimonial.experience}</p>
-                            <p className="text-gray-600">- {testimonial.name}</p>
+                            <p className="font-semibold">{testimonial.content}</p>
+                            <p className="text-gray-600">- {testimonial.author_name}</p>
                             {testimonial.video_url && (
                                 <div className="mt-4">
                                     <ReactPlayer
