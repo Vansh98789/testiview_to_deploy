@@ -205,12 +205,7 @@ const Wall = () => {
           <pre className="whitespace-pre-wrap p-2 bg-gray-200 rounded-lg text-sm flex-grow">
             {embedCode}
           </pre>
-          <button
-            onClick={() => copyToClipboard(embedCode)}
-            className="ml-2 bg-blue-500 text-white py-1 px-2 rounded"
-          >
-            Copy
-          </button>
+          
         </div>
       </div>
     </div>
