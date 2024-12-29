@@ -76,8 +76,18 @@ const Wall = () => {
 `;
       case "fixed":
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-                <iframe id='testimonialto-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=fixed" frameborder="0" scrolling="no" width="100%"></iframe>
-                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');</script>`;
+<iframe 
+  id='testimonialto-vansh-test-review-tag-all-light' 
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
+  frameborder="0" 
+  scrolling="no" 
+  width="100%" 
+  style="height: 800px;"  <!-- Set the desired height here -->
+></iframe>
+<script type="text/javascript">
+  iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
+</script>
+`;
       case "carousel":
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
                 <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
