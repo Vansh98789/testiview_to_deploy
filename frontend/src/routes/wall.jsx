@@ -33,12 +33,10 @@ const Wall = () => {
           `https://testiview-backend.vercel.app/testimonials?userId=${userId}`
         );
 
-        // Check if the response is OK
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.statusText}`);
         }
 
-        // Log the full response for debugging
         const data = await response.json();
         console.log("Data received from API:", data);
 
@@ -115,7 +113,69 @@ const Wall = () => {
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Wall of Testimonials</h1>
 
-      {/* Render Layout */}
+      {/* Render Layouts */}
+
+      {/* Fixed Layout */}
+      {layout === "fixed" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {testimonials.length === 0 ? (
+            <p>No testimonials available at the moment.</p>
+          ) : (
+            testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center"
+              >
+                <p className="font-semibold text-lg text-center">{testimonial.content}</p>
+                <p className="text-gray-600 text-center">- {testimonial.author_name}</p>
+                {testimonial.video_url && (
+                  <div className="mt-4 w-full">
+                    <ReactPlayer
+                      url={testimonial.video_url}
+                      controls
+                      width="100%"
+                      height="200px"
+                    />
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Animated Layout */}
+      {layout === "animated" && (
+        <div className="overflow-hidden relative">
+          <div className="flex flex-wrap justify-center">
+            {testimonials.length === 0 ? (
+              <p>No testimonials available at the moment.</p>
+            ) : (
+              testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="bg-purple-100 p-6 rounded-lg shadow-lg animate-slide-up w-1/4 mx-2 my-4"
+                >
+                  <p className="font-bold text-purple-700">{testimonial.content}</p>
+                  <p className="text-purple-600">- {testimonial.author_name}</p>
+                  {testimonial.video_url && (
+                    <div className="mt-4">
+                      <ReactPlayer
+                        url={testimonial.video_url}
+                        controls
+                        width="100%"
+                        height="200px"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Carousel Layout */}
       {layout === "carousel" && (
         <Slider {...settings}>
           {testimonials.length === 0 ? (
@@ -124,7 +184,7 @@ const Wall = () => {
             testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="carousel-card bg-white p-6 rounded-lg shadow-lg m-4"
+                className="carousel-card bg-white p-6 rounded-lg shadow-lg mx-2"
               >
                 <p className="font-semibold">{testimonial.content}</p>
                 <p className="text-gray-600">- {testimonial.author_name}</p>
@@ -144,6 +204,7 @@ const Wall = () => {
         </Slider>
       )}
 
+      {/* Embed Code Section */}
       <div className="mt-8 p-4 bg-gray-100 rounded-lg">
         <h2 className="text-xl font-bold mb-4">Embed Code:</h2>
         <div className="flex items-center">
