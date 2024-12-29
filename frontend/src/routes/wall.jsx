@@ -28,7 +28,7 @@ const Wall = () => {
       const userId = user.id;
 
       try {
-        console.log(`Fetching testimonials for userId: ${userId}`);
+        console.log(`Fetching testimonials for userId: ${userId}`); // Log userId
         const response = await fetch(
           `https://testiview-backend.vercel.app/testimonials?userId=${userId}`
         );
@@ -40,11 +40,11 @@ const Wall = () => {
 
         // Log the full response for debugging
         const data = await response.json();
-        console.log("Data received from API:", data);
+        console.log("Data received from API:", data); // Log the data received from the API
 
         setTestimonials(data); // Set the testimonials state
       } catch (err) {
-        console.error("Error fetching testimonials:", err);
+        console.error("Error fetching testimonials:", err); // Log any errors
       }
     };
 
@@ -83,45 +83,73 @@ const Wall = () => {
 
   const embedCode = getEmbedCode();
 
-  // Slick Carousel settings
-  const settings = {
-    dots: true, // Show navigation dots
-    infinite: true, // Infinite loop scrolling
-    speed: 500, // Transition speed
-    slidesToShow: 3, // Number of slides to show at once
-    slidesToScroll: 1, // Number of slides to scroll at a time
-    centerMode: true, // Center current slide
-    focusOnSelect: true, // Focus on selected slide
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2, // 2 slides on medium screens
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1, // 1 slide on smaller screens
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
-
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Wall of Testimonials</h1>
 
       {/* Render Layout */}
-      {layout === "carousel" && (
-        <Slider {...settings}>
+      {layout === "fixed" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {testimonials.length === 0 ? (
             <p>No testimonials available at the moment.</p>
           ) : (
             testimonials.map((testimonial, index) => (
-              <div key={index} className="carousel-card bg-white p-6 rounded-lg shadow-lg m-4">
+              <div key={index} className="bg-white p-4 rounded-lg shadow">
+                <p className="font-semibold">{testimonial.content}</p>
+                <p className="text-gray-600">- {testimonial.author_name}</p>
+                {testimonial.video_url && (
+                  <div className="mt-4">
+                    <ReactPlayer
+                      url={testimonial.video_url}
+                      controls
+                      width="100%"
+                      height="200px"
+                    />
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {layout === "animated" && (
+        <div className="overflow-hidden relative">
+          <div className="flex flex-wrap justify-center">
+            {testimonials.length === 0 ? (
+              <p>No testimonials available at the moment.</p>
+            ) : (
+              testimonials.map((testimonial, index) => (
+                <div
+                  key={index}
+                  className="bg-purple-100 p-4 rounded-lg shadow-lg animate-slide-up w-1/4 mx-2 my-4"
+                >
+                  <p className="font-bold text-purple-700">{testimonial.content}</p>
+                  <p className="text-purple-600">- {testimonial.author_name}</p>
+                  {testimonial.video_url && (
+                    <div className="mt-4">
+                      <ReactPlayer
+                        url={testimonial.video_url}
+                        controls
+                        width="100%"
+                        height="200px"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {layout === "carousel" && (
+        <Slider>
+          {testimonials.length === 0 ? (
+            <p>No testimonials available at the moment.</p>
+          ) : (
+            testimonials.map((testimonial, index) => (
+              <div key={index} className="bg-gray-100 p-6 rounded-lg shadow-lg">
                 <p className="font-semibold">{testimonial.content}</p>
                 <p className="text-gray-600">- {testimonial.author_name}</p>
                 {testimonial.video_url && (
