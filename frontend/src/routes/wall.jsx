@@ -9,6 +9,8 @@ const Wall = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [layout, setLayout] = useState("fixed");
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Fetch layout from URL query parameters
   useEffect(() => {
@@ -26,7 +28,6 @@ const Wall = () => {
       }
 
       const userId = user.id;
-
       try {
         console.log(`Fetching testimonials for userId: ${userId}`);
         const response = await fetch(
@@ -41,28 +42,16 @@ const Wall = () => {
         console.log("Data received from API:", data);
 
         setTestimonials(data); // Set the testimonials state
+        setLoading(false); // Set loading to false after data is fetched
       } catch (err) {
         console.error("Error fetching testimonials:", err);
+        setError("Failed to load testimonials. Please try again later.");
+        setLoading(false); // Set loading to false on error
       }
     };
 
     fetchTestimonials();
   }, []);
-
-  // State for carousel navigation (for layout "carousel")
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const totalCards = testimonials.length;
-
-  // Function to move the carousel (for layout "carousel")
-  const moveSlide = (step) => {
-    let newIndex = currentIndex + step;
-    if (newIndex < 0) {
-      newIndex = totalCards - 1;
-    } else if (newIndex >= totalCards) {
-      newIndex = 0;
-    }
-    setCurrentIndex(newIndex);
-  };
 
   // Embed code for each layout
   const getEmbedCode = () => {
@@ -103,10 +92,13 @@ const Wall = () => {
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Wall of Testimonials</h1>
 
-      {/* Render Layouts */}
+      {/* Loading & Error Handling */}
+      {loading && <div className="text-center">Loading testimonials...</div>}
+      {error && <div className="text-center text-red-500">{error}</div>}
 
+      {/* Render Layouts */}
       {/* Fixed Layout */}
-      {layout === "fixed" && (
+      {layout === "fixed" && !loading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-white p-4 rounded-lg shadow">
@@ -128,7 +120,7 @@ const Wall = () => {
       )}
 
       {/* Animated Layout */}
-      {layout === "animated" && (
+      {layout === "animated" && !loading && !error && (
         <div className="overflow-hidden relative">
           <div className="flex flex-wrap justify-center">
             {testimonials.map((testimonial, index) => (
@@ -155,56 +147,42 @@ const Wall = () => {
       )}
 
       {/* Carousel Layout */}
-      {layout === "carousel" && (
+      {layout === "carousel" && !loading && !error && (
         <div className="relative w-full max-w-4xl mx-auto mt-10">
-          {/* Left Arrow Button */}
-          <button
-            onClick={() => moveSlide(-1)}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg z-10"
+          {/* Carousel (react-slick) */}
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={500}
+            slidesToShow={1}
+            slidesToScroll={1}
+            arrows={true}
           >
-            &#10094;
-          </button>
-
-          {/* Carousel */}
-          <div className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="flex-shrink-0 w-full p-5">
-                  <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                    {testimonial.video_url ? (
-                      <ReactPlayer
-                        url={testimonial.video_url}
-                        controls
-                        width="100%"
-                        height="200px"
-                      />
-                    ) : (
-                      <img
-                        className="w-full h-48 object-cover"
-                        src="https://via.placeholder.com/150"
-                        alt="Placeholder"
-                      />
-                    )}
-                    <div className="p-4 text-center">
-                      <p className="font-semibold text-lg">{testimonial.content}</p>
-                      <p className="text-gray-600 mt-2">- {testimonial.author_name}</p>
-                    </div>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="p-4">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  {testimonial.video_url ? (
+                    <ReactPlayer
+                      url={testimonial.video_url}
+                      controls
+                      width="100%"
+                      height="200px"
+                    />
+                  ) : (
+                    <img
+                      className="w-full h-48 object-cover"
+                      src="https://via.placeholder.com/150"
+                      alt="Placeholder"
+                    />
+                  )}
+                  <div className="p-4 text-center">
+                    <p className="font-semibold text-lg">{testimonial.content}</p>
+                    <p className="text-gray-600 mt-2">- {testimonial.author_name}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right Arrow Button */}
-          <button
-            onClick={() => moveSlide(1)}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full shadow-lg z-10"
-          >
-            &#10095;
-          </button>
+              </div>
+            ))}
+          </Slider>
         </div>
       )}
 
@@ -215,7 +193,6 @@ const Wall = () => {
           <pre className="whitespace-pre-wrap p-2 bg-gray-200 rounded-lg text-sm flex-grow">
             {embedCode}
           </pre>
-          
         </div>
       </div>
     </div>
