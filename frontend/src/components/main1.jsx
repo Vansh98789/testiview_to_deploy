@@ -1,19 +1,36 @@
 import { Link } from 'react-router-dom';
-import img from '../images/ph.png'
-function Main1(){
-    return(<>
-    <div className="mb-[2rem]">
-    <p className='text-5xl ml-[20rem] mt-[5rem] font-bold'>Get testimonials from Customers<br/><span className="ml-[20rem]"> & </span><br/> <span className="ml-[5rem]">Enhance your business</span></p>
-       <p className="font-bold  mt-[1rem] ml-[10rem]">Using this you can collect all your review at one place and simply attach them to your own
-       website using simple line of given code. </p> 
+import img from '../images/ph.png';
+
+function Main1() {
+  return (
+    <>
+      <div className="mb-8 px-4 md:px-8 lg:px-16">
+        {/* Heading Text */}
+        <p className='text-4xl sm:text-5xl text-center font-bold mt-12'>
+          Get testimonials from Customers
+          <br />
+          <span className="block sm:text-center"> & </span>
+          <br />
+          <span className="text-center sm:text-left">Enhance your business</span>
+        </p>
         
-       <img src={img} alt="dashboard photo" className="h-[40rem] w-[70rem] ml-[10rem]"/>
-
-    </div>
+        {/* Description Text */}
+        <p className="font-bold mt-4 text-center sm:text-left">
+          Using this, you can collect all your reviews in one place and simply attach them to your own
+          website using a simple line of code.
+        </p>
         
-
-    </>)
-
+        {/* Image */}
+        <div className="flex justify-center mt-8">
+          <img
+            src={img}
+            alt="dashboard photo"
+            className="h-[40rem] w-[80%] sm:w-[70%] lg:w-[60%] object-cover"
+          />
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default Main1;
