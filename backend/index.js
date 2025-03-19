@@ -128,12 +128,13 @@ app.get("/testimonials", async (req, res) => {
       : await client.query("SELECT * FROM test_data");  // Fetch all if no userId is provided
 
     client.release();  // Release the client back to the pool
-    res.status(200).json(result.rows);
+    res.status(200).json(result.rows);  // Send the fetched data as response
   } catch (err) {
     console.error("Error fetching testimonials:", err);
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 // Server listening
 app.listen(port, () => {
