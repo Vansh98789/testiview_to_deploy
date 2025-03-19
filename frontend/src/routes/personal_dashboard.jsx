@@ -67,10 +67,10 @@ const PersonalDashboard = ({ setIsLogin }) => {
                         <div key={index} className="review-item bg-white p-4 rounded-lg shadow mb-4">
                             <div className="flex flex-col md:flex-row justify-between">
                                 <div className="flex-1 mb-4 md:mb-0">
-                                    <p className="font-medium">Review: {review.content}</p>
                                     <p><strong>Name:</strong> {review.author_name}</p>
-                                    <p><strong>Submitted At:</strong> {review.submitted_at}</p>
-                                    <p><strong>Email:</strong> {review.email}</p>
+                                     <p className="font-medium">Review: {review.content}</p>
+                                    <p><strong>Submitted At:</strong> {review.created_at}</p>
+                                   
                                 </div>
 
                                 {/* Video Section */}
