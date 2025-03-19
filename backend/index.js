@@ -137,6 +137,26 @@ app.get("/testimonials", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+// New route for Wall testimonials
+app.get("/wall-testimonials", async (req, res) => {
+  const userId = req.query.userId; // Get userId from query parameters
+
+  try {
+    const client = await pool.connect();  // Get a client from the pool
+
+    const query = userId 
+      ? "SELECT author_name, content, rating, video_url, email, submitted_at FROM test_data WHERE user_id = $1"  // Fetch reviews for a specific user with email and submission timestamp
+      : "SELECT author_name, content, rating, video_url, email, submitted_at FROM test_data";  // Fetch all reviews with email and submission timestamp
+
+    const result = await client.query(query, [userId]);  // Query the database
+    client.release();  // Release the client back to the pool
+
+    res.status(200).json(result.rows);  // Send the reviews data back as JSON
+  } catch (err) {
+    console.error("Error fetching testimonials:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
 // Server listening
