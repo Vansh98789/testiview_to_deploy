@@ -137,26 +137,43 @@ app.get("/testimonials", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// New route for Wall testimonials
+// GET request to fetch testimonials for the wall page
 app.get("/wall-testimonials", async (req, res) => {
-  const userId = req.query.userId; // Get userId from query parameters
+  const userId = req.query.userId;  // Get userId from query parameters
+
+  if (!userId) {
+    console.error("No userId provided in the request");
+    return res.status(400).send("Bad Request: Missing userId");
+  }
 
   try {
+    console.log(`Fetching testimonials for userId: ${userId}`); // Log userId for debugging
+
     const client = await pool.connect();  // Get a client from the pool
 
-    const query = userId 
-      ? "SELECT author_name, content, rating, video_url, email, submitted_at FROM test_data WHERE user_id = $1"  // Fetch reviews for a specific user with email and submission timestamp
-      : "SELECT author_name, content, rating, video_url, email, submitted_at FROM test_data";  // Fetch all reviews with email and submission timestamp
+    // Query to fetch testimonials based on userId
+    const result = await client.query("SELECT * FROM test_data WHERE user_id = $1", [userId]);
 
-    const result = await client.query(query, [userId]);  // Query the database
+    // Log the result of the query
+    console.log("Testimonials fetched:", result.rows);
+
     client.release();  // Release the client back to the pool
 
-    res.status(200).json(result.rows);  // Send the reviews data back as JSON
+    if (result.rows.length === 0) {
+      console.warn("No testimonials found for userId:", userId); // Log if no testimonials are found
+      return res.status(404).send("No testimonials found for this user");
+    }
+
+    res.status(200).json(result.rows);  // Send the fetched testimonials as the response
   } catch (err) {
-    console.error("Error fetching testimonials:", err);
+    // Log the full error message and stack trace
+    console.error("Error fetching testimonials for wall:", err.message);
+    console.error(err.stack);
+
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 
 // Server listening
