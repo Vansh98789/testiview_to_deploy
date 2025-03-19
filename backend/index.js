@@ -137,39 +137,22 @@ app.get("/testimonials", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-// GET request to fetch testimonials for the wall page
-app.get("/wall-testimonials", async (req, res) => {
-  const userId = req.query.userId;  // Get userId from query parameters
-
-  if (!userId) {
-    console.error("No userId provided in the request");
-    return res.status(400).send("Bad Request: Missing userId");
-  }
+app.get("/testimonials-wall", async (req, res) => {
+  const userId = req.query.userId; // Get userId from query parameters
 
   try {
-    console.log(`Fetching testimonials for userId: ${userId}`); // Log userId for debugging
-
     const client = await pool.connect();  // Get a client from the pool
 
-    // Query to fetch testimonials based on userId
-    const result = await client.query("SELECT * FROM test_data WHERE user_id = $1", [userId]);
-
-    // Log the result of the query
-    console.log("Testimonials fetched:", result.rows);
+    // Query to fetch reviews for the specific user or all reviews if no userId is provided
+    const query = userId 
+      ? "SELECT * FROM test_data WHERE user_id = $1"  // Fetch reviews for specific user
+      : "SELECT * FROM test_data";  // Fetch all reviews
+    const result = await client.query(query, [userId]);
 
     client.release();  // Release the client back to the pool
-
-    if (result.rows.length === 0) {
-      console.warn("No testimonials found for userId:", userId); // Log if no testimonials are found
-      return res.status(404).send("No testimonials found for this user");
-    }
-
-    res.status(200).json(result.rows);  // Send the fetched testimonials as the response
+    res.status(200).json(result.rows);  // Return reviews as a JSON response
   } catch (err) {
-    // Log the full error message and stack trace
-    console.error("Error fetching testimonials for wall:", err.message);
-    console.error(err.stack);
-
+    console.error("Error fetching testimonials:", err);
     res.status(500).send("Internal Server Error");
   }
 });
