@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // For URL query params
+import { useSearchParams } from "react-router-dom";
 import ReactPlayer from "react-player";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -8,15 +8,9 @@ import "slick-carousel/slick/slick-theme.css";
 const Wall = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [layout, setLayout] = useState("fixed");
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  // To get query params from the URL
-  const location = useLocation();
-
-  // Fetch userId from URL or use cookies, state management, etc.
-  const searchParams = new URLSearchParams(location.search);
-  const userId = searchParams.get("userId");
 
   // Fetch layout from URL query parameters
   useEffect(() => {
@@ -24,20 +18,29 @@ const Wall = () => {
     setLayout(layoutType || "fixed");
   }, [searchParams]);
 
-  // Fetch testimonials from backend based on userId
+  // Fetch testimonials from the backend specifically for the Wall page
   useEffect(() => {
     const fetchTestimonials = async () => {
-      if (!userId) {
-        console.error("User ID is required");
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user || !user.id) {
+        console.error("User ID not found in localStorage");
         return;
       }
 
+      const userId = user.id;
       try {
-        const response = await fetch(`https://your-backend-url.com/testimonials?userId=${userId}`);
+        console.log(`Fetching testimonials for userId: ${userId}`);
+        const response = await fetch(
+          `https://testiview-backend.vercel.app/wall-testimonials?userId=${userId}`
+        );
+
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error(`Network response was not ok: ${response.statusText}`);
         }
+
         const data = await response.json();
+        console.log("Data received from API:", data);
+
         setTestimonials(data); // Set the testimonials state
         setLoading(false); // Set loading to false after data is fetched
       } catch (err) {
@@ -48,42 +51,36 @@ const Wall = () => {
     };
 
     fetchTestimonials();
-  }, [userId]); // Run this effect when userId changes
+  }, []);
 
   // Embed code for each layout
   const getEmbedCode = () => {
     switch (layout) {
       case "animated":
-        return (
-          <iframe
-            id="testimonialto-vansh-test-review-tag-all-light-animated"
-            src="https://testiview-frontend.vercel.app/wall?layout=animated"
-            frameBorder="0"
-            scrolling="no"
-            width="100%"
-          />
-        );
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>
+<script type="text/javascript">
+    iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
+</script>
+`;
       case "fixed":
-        return (
-          <iframe
-            id="testimonialto-vansh-test-review-tag-all-light"
-            src="https://testiview-frontend.vercel.app/wall?layout=fixed"
-            frameBorder="0"
-            scrolling="no"
-            width="100%"
-            style={{ height: "800px" }}
-          />
-        );
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe 
+  id='testimonialto-vansh-test-review-tag-all-light' 
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
+  frameborder="0" 
+  scrolling="no" 
+  width="100%" 
+  style="height: 800px;"  <!-- Set the desired height here -->
+></iframe>
+<script type="text/javascript">
+  iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
+</script>
+`;
       case "carousel":
-        return (
-          <iframe
-            id="testimonialto-carousel-vansh-test-review-tag-all-light"
-            src="https://testiview-frontend.vercel.app/wall?layout=carousel"
-            frameBorder="0"
-            scrolling="no"
-            width="100%"
-          />
-        );
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+                <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
+                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
       default:
         return "";
     }
@@ -100,12 +97,15 @@ const Wall = () => {
       {error && <div className="text-center text-red-500">{error}</div>}
 
       {/* Render Layouts */}
+      {/* Fixed Layout */}
       {layout === "fixed" && !loading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-white p-4 rounded-lg shadow">
               <p className="font-semibold">{testimonial.content}</p>
               <p className="text-gray-600">- {testimonial.author_name}</p>
+              <p className="text-gray-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
+              <p className="text-gray-500">Email: {testimonial.email}</p>
               {testimonial.video_url && (
                 <div className="mt-4">
                   <ReactPlayer
@@ -132,6 +132,8 @@ const Wall = () => {
               >
                 <p className="font-bold text-purple-700">{testimonial.content}</p>
                 <p className="text-purple-600">- {testimonial.author_name}</p>
+                <p className="text-purple-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
+                <p className="text-purple-500">Email: {testimonial.email}</p>
                 {testimonial.video_url && (
                   <div className="mt-4">
                     <ReactPlayer
@@ -151,7 +153,15 @@ const Wall = () => {
       {/* Carousel Layout */}
       {layout === "carousel" && !loading && !error && (
         <div className="relative w-full max-w-4xl mx-auto mt-10">
-          <Slider dots={true} infinite={true} speed={500} slidesToShow={1} slidesToScroll={1} arrows={true}>
+          {/* Carousel (react-slick) */}
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={500}
+            slidesToShow={1}
+            slidesToScroll={1}
+            arrows={true}
+          >
             {testimonials.map((testimonial, index) => (
               <div key={index} className="p-4">
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -172,6 +182,8 @@ const Wall = () => {
                   <div className="p-4 text-center">
                     <p className="font-semibold text-lg">{testimonial.content}</p>
                     <p className="text-gray-600 mt-2">- {testimonial.author_name}</p>
+                    <p className="text-gray-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
+                    <p className="text-gray-500">Email: {testimonial.email}</p>
                   </div>
                 </div>
               </div>
