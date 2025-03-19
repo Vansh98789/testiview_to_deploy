@@ -123,12 +123,15 @@ app.get("/testimonials", async (req, res) => {
 
   try {
     const client = await pool.connect();  // Get a client from the pool
-    const result = userId 
-      ? await client.query("SELECT * FROM test_data WHERE user_id = $1", [userId])
-      : await client.query("SELECT * FROM test_data");  // Fetch all if no userId is provided
+
+    // Query to fetch reviews for the specific user or all reviews if no userId is provided
+    const query = userId 
+      ? "SELECT * FROM test_data WHERE user_id = $1"  // Fetch reviews for specific user
+      : "SELECT * FROM test_data";  // Fetch all reviews
+    const result = await client.query(query, [userId]);
 
     client.release();  // Release the client back to the pool
-    res.status(200).json(result.rows);  // Send the fetched data as response
+    res.status(200).json(result.rows);  // Return reviews as a JSON response
   } catch (err) {
     console.error("Error fetching testimonials:", err);
     res.status(500).send("Internal Server Error");
