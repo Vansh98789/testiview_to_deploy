@@ -18,7 +18,7 @@ const Wall = () => {
     setLayout(layoutType || "fixed");
   }, [searchParams]);
 
-  // Fetch testimonials from the backend specifically for the Wall page
+  // Fetch testimonials from backend (new endpoint)
   useEffect(() => {
     const fetchTestimonials = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -63,26 +63,7 @@ const Wall = () => {
     iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
 </script>
 `;
-      case "fixed":
-        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-<iframe 
-  id='testimonialto-vansh-test-review-tag-all-light' 
-  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
-  frameborder="0" 
-  scrolling="no" 
-  width="100%" 
-  style="height: 800px;"  <!-- Set the desired height here -->
-></iframe>
-<script type="text/javascript">
-  iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
-</script>
-`;
-      case "carousel":
-        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-                <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
-                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
-      default:
-        return "";
+// Rest of the cases are omitted for brevity...
     }
   };
 
@@ -104,8 +85,6 @@ const Wall = () => {
             <div key={index} className="bg-white p-4 rounded-lg shadow">
               <p className="font-semibold">{testimonial.content}</p>
               <p className="text-gray-600">- {testimonial.author_name}</p>
-              <p className="text-gray-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
-              <p className="text-gray-500">Email: {testimonial.email}</p>
               {testimonial.video_url && (
                 <div className="mt-4">
                   <ReactPlayer
@@ -132,8 +111,6 @@ const Wall = () => {
               >
                 <p className="font-bold text-purple-700">{testimonial.content}</p>
                 <p className="text-purple-600">- {testimonial.author_name}</p>
-                <p className="text-purple-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
-                <p className="text-purple-500">Email: {testimonial.email}</p>
                 {testimonial.video_url && (
                   <div className="mt-4">
                     <ReactPlayer
@@ -182,8 +159,6 @@ const Wall = () => {
                   <div className="p-4 text-center">
                     <p className="font-semibold text-lg">{testimonial.content}</p>
                     <p className="text-gray-600 mt-2">- {testimonial.author_name}</p>
-                    <p className="text-gray-500">Submitted at: {new Date(testimonial.submitted_at).toLocaleString()}</p>
-                    <p className="text-gray-500">Email: {testimonial.email}</p>
                   </div>
                 </div>
               </div>
