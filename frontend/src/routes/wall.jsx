@@ -18,7 +18,7 @@ const Wall = () => {
     setLayout(layoutType || "fixed");
   }, [searchParams]);
 
-  // Fetch testimonials from backend (new endpoint)
+  // Fetch testimonials from backend
   useEffect(() => {
     const fetchTestimonials = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -30,8 +30,10 @@ const Wall = () => {
       const userId = user.id;
       try {
         console.log(`Fetching testimonials for userId: ${userId}`);
+
+        // Change the endpoint to the new /testimonials-wall
         const response = await fetch(
-          `https://testiview-backend.vercel.app/wall-testimonials?userId=${userId}`
+          `https://testiview-backend.vercel.app/testimonials-wall?userId=${userId}`
         );
 
         if (!response.ok) {
@@ -51,7 +53,7 @@ const Wall = () => {
     };
 
     fetchTestimonials();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Embed code for each layout
   const getEmbedCode = () => {
@@ -63,7 +65,26 @@ const Wall = () => {
     iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
 </script>
 `;
-// Rest of the cases are omitted for brevity...
+      case "fixed":
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe 
+  id='testimonialto-vansh-test-review-tag-all-light' 
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
+  frameborder="0" 
+  scrolling="no" 
+  width="100%" 
+  style="height: 800px;"  <!-- Set the desired height here -->
+></iframe>
+<script type="text/javascript">
+  iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
+</script>
+`;
+      case "carousel":
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+                <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
+                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
+      default:
+        return "";
     }
   };
 
