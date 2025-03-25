@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import img from '../images/ph.png';
+import img from '../images/phh.png';
 
 function Main1() {
   return (
