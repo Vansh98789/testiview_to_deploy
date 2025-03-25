@@ -15,7 +15,7 @@ function Main1() {
         </p>
         
         {/* Description Text */}
-        <p className="font-bold mt-4 text-center sm:text-left">
+        <p className="font-bold mt-4 text-center sm:text-left ml-10">
           Using this, you can collect all your reviews in one place and simply attach them to your own
           website using a simple line of code.
         </p>
