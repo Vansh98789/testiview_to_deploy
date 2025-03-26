@@ -11,9 +11,14 @@ const port = process.env.PORT || 9890;
 
 // CORS configuration
 app.use(cors({
-  origin: 'https://testiview-frontend.vercel.app',  // Make sure this is your frontend URL
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  origin: 'https://testiview-frontend.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With'
+  ],
+  credentials: true  // Important for cookies/authentication
 }));
 
 // Middleware for body parsing
