@@ -30,6 +30,8 @@ const Wall = () => {
       const userId = user.id;
       try {
         console.log(`Fetching testimonials for userId: ${userId}`);
+
+        // Change the endpoint to the new /testimonials-wall
         const response = await fetch(
           `https://testiview-backend.vercel.app/testimonials-wall?userId=${userId}`
         );
@@ -41,99 +43,46 @@ const Wall = () => {
         const data = await response.json();
         console.log("Data received from API:", data);
 
-        setTestimonials(data);
-        setLoading(false);
+        setTestimonials(data); // Set the testimonials state
+        setLoading(false); // Set loading to false after data is fetched
       } catch (err) {
         console.error("Error fetching testimonials:", err);
         setError("Failed to load testimonials. Please try again later.");
-        setLoading(false);
+        setLoading(false); // Set loading to false on error
       }
     };
 
     fetchTestimonials();
-  }, []);
-
-  // Handle iframe resizing after load
-  useEffect(() => {
-    const iframe = document.getElementById("testimonialto-vansh-test-review-tag-all-light");
-    if (iframe) {
-      iframe.onload = () => {
-        console.log("Iframe loaded. Sending resize message.");
-        iframe.contentWindow.postMessage("resize", "https://testiview-frontend.vercel.app");
-      };
-    }
-  }, [layout]); // Runs when layout changes
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   // Embed code for each layout
   const getEmbedCode = () => {
     switch (layout) {
       case "animated":
-        return `<script type="text/javascript">
-          document.addEventListener("DOMContentLoaded", function() {
-            const iframe = document.getElementById('testimonialto-vansh-test-review-tag-all-light-animated');
-            if (iframe) {
-              iframe.onload = () => {
-                iframe.contentWindow.postMessage("resize", "https://testiview-frontend.vercel.app");
-              };
-            }
-          });
-        </script>
-        <iframe 
-          id='testimonialto-vansh-test-review-tag-all-light-animated' 
-          src="https://testiview-frontend.vercel.app/wall?layout=animated" 
-          frameborder="0" 
-          scrolling="no" 
-          width="100%">
-        </iframe>
-        <script type="text/javascript">
-          iFrameResize({ log: false, checkOrigin: false }, '#testimonialto-vansh-test-review-tag-all-light-animated');
-        </script>`;
-
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>
+<script type="text/javascript">
+    iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
+</script>
+`;
       case "fixed":
-        return `<script type="text/javascript">
-          document.addEventListener("DOMContentLoaded", function() {
-            const iframe = document.getElementById('testimonialto-vansh-test-review-tag-all-light');
-            if (iframe) {
-              iframe.onload = () => {
-                iframe.contentWindow.postMessage("resize", "https://testiview-frontend.vercel.app");
-              };
-            }
-          });
-        </script>
-        <iframe 
-          id='testimonialto-vansh-test-review-tag-all-light' 
-          src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
-          frameborder="0" 
-          scrolling="no" 
-          width="100%" 
-          style="height: 800px;">
-        </iframe>
-        <script type="text/javascript">
-          iFrameResize({ log: false, checkOrigin: false }, '#testimonialto-vansh-test-review-tag-all-light');
-        </script>`;
-
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe 
+  id='testimonialto-vansh-test-review-tag-all-light' 
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
+  frameborder="0" 
+  scrolling="no" 
+  width="100%" 
+  style="height: 800px;"  <!-- Set the desired height here -->
+></iframe>
+<script type="text/javascript">
+  iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
+</script>
+`;
       case "carousel":
-        return `<script type="text/javascript">
-          document.addEventListener("DOMContentLoaded", function() {
-            const iframe = document.getElementById('testimonialto-carousel-vansh-test-review-tag-all-light');
-            if (iframe) {
-              iframe.onload = () => {
-                iframe.contentWindow.postMessage("resize", "https://testiview-frontend.vercel.app");
-              };
-            }
-          });
-        </script>
-        <iframe 
-          id='testimonialto-carousel-vansh-test-review-tag-all-light' 
-          src="https://testiview-frontend.vercel.app/wall?layout=carousel" 
-          frameborder="0" 
-          scrolling="no" 
-          width="100%">
-        </iframe>
-        <script type="text/javascript">
-          iFrameResize({ log: false, checkOrigin: false }, '#testimonialto-carousel-vansh-test-review-tag-all-light');
-        </script>`;
-
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+                <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
+                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
       default:
         return "";
     }
@@ -148,6 +97,96 @@ const Wall = () => {
       {/* Loading & Error Handling */}
       {loading && <div className="text-center">Loading testimonials...</div>}
       {error && <div className="text-center text-red-500">{error}</div>}
+
+      {/* Render Layouts */}
+      {/* Fixed Layout */}
+      {layout === "fixed" && !loading && !error && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-white p-4 rounded-lg shadow">
+              <p className="font-semibold">{testimonial.content}</p>
+              <p className="text-gray-600">- {testimonial.author_name}</p>
+              {testimonial.video_url && (
+                <div className="mt-4">
+                  <ReactPlayer
+                    url={testimonial.video_url}
+                    controls
+                    width="100%"
+                    height="200px"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Animated Layout */}
+      {layout === "animated" && !loading && !error && (
+        <div className="overflow-hidden relative">
+          <div className="flex flex-wrap justify-center">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="bg-purple-100 p-4 rounded-lg shadow-lg animate-slide-up w-1/4 mx-2 my-4"
+              >
+                <p className="font-bold text-purple-700">{testimonial.content}</p>
+                <p className="text-purple-600">- {testimonial.author_name}</p>
+                {testimonial.video_url && (
+                  <div className="mt-4">
+                    <ReactPlayer
+                      url={testimonial.video_url}
+                      controls
+                      width="100%"
+                      height="200px"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Carousel Layout */}
+      {layout === "carousel" && !loading && !error && (
+        <div className="relative w-full max-w-4xl mx-auto mt-10">
+          {/* Carousel (react-slick) */}
+          <Slider
+            dots={true}
+            infinite={true}
+            speed={500}
+            slidesToShow={1}
+            slidesToScroll={1}
+            arrows={true}
+          >
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="p-4">
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  {testimonial.video_url ? (
+                    <ReactPlayer
+                      url={testimonial.video_url}
+                      controls
+                      width="100%"
+                      height="200px"
+                    />
+                  ) : (
+                    <img
+                      className="w-full h-48 object-cover"
+                      src="https://via.placeholder.com/150"
+                      alt="Placeholder"
+                    />
+                  )}
+                  <div className="p-4 text-center">
+                    <p className="font-semibold text-lg">{testimonial.content}</p>
+                    <p className="text-gray-600 mt-2">- {testimonial.author_name}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div>
+      )}
 
       {/* Embed Code Section */}
       <div className="mt-8 p-4 bg-gray-100 rounded-lg">
