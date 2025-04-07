@@ -12,7 +12,7 @@ const Wall = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch layout from URL query parameters
+  // Fetch layout and authentication params from URL
   useEffect(() => {
     const layoutType = searchParams.get("layout");
     setLayout(layoutType || "fixed");
@@ -21,46 +21,74 @@ const Wall = () => {
   // Fetch testimonials from backend
   useEffect(() => {
     const fetchTestimonials = async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.id) {
-        console.error("User ID not found in localStorage");
-        return;
-      }
-
-      const userId = user.id;
       try {
-        console.log(`Fetching testimonials for userId: ${userId}`);
-
-        // Change the endpoint to the new /testimonials-wall
-        const response = await fetch(
-          `https://testiview-backend.vercel.app/testimonials-wall?userId=${userId}`
-        );
-
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`);
+        // Get userId and token from URL parameters
+        const userId = searchParams.get("userId");
+        const token = searchParams.get("token");
+        
+        // If URL has userId and token parameters, use them
+        if (userId && token) {
+          console.log(`Fetching testimonials for userId: ${userId} with token`);
+          const response = await fetch(
+            `https://testiview-backend.vercel.app/testimonials-wall?userId=${userId}&token=${token}`
+          );
+          
+          if (!response.ok) {
+            throw new Error(`Authentication failed: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          console.log("Data received from API:", data);
+          setTestimonials(data);
+          setLoading(false);
+        } else {
+          // Fallback to localStorage for preview in user's own dashboard
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (!user || !user.id) {
+            throw new Error("User ID not found. Please log in or provide valid embed parameters.");
+          }
+          
+          const userId = user.id;
+          const embedToken = localStorage.getItem("embedToken");
+          
+          console.log(`Fetching testimonials for userId: ${userId}`);
+          const response = await fetch(
+            `https://testiview-backend.vercel.app/testimonials?userId=${userId}`
+          );
+          
+          if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          console.log("Data received from API:", data);
+          setTestimonials(data);
+          setLoading(false);
         }
-
-        const data = await response.json();
-        console.log("Data received from API:", data);
-
-        setTestimonials(data); // Set the testimonials state
-        setLoading(false); // Set loading to false after data is fetched
       } catch (err) {
         console.error("Error fetching testimonials:", err);
-        setError("Failed to load testimonials. Please try again later.");
-        setLoading(false); // Set loading to false on error
+        setError("Failed to load testimonials: " + err.message);
+        setLoading(false);
       }
     };
-
+    
     fetchTestimonials();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, [searchParams]); // Include searchParams in dependency array to re-fetch if URL params change
 
-  // Embed code for each layout
+  // Generate embed code with userId and token
   const getEmbedCode = () => {
+    // Get user info from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    const embedToken = localStorage.getItem("embedToken");
+    const userId = user?.id;
+
+    // Only include authentication if we have both userId and token
+    const authParams = userId && embedToken ? `&userId=${userId}&token=${embedToken}` : '';
+    
     switch (layout) {
       case "animated":
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-<iframe id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated" frameborder="0" scrolling="no" width="100%"></iframe>
+<iframe id='testimonialto-vansh-test-review-tag-all-light-animated' src="https://testiview-frontend.vercel.app/wall?layout=animated${authParams}" frameborder="0" scrolling="no" width="100%"></iframe>
 <script type="text/javascript">
     iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
 </script>
@@ -69,7 +97,7 @@ const Wall = () => {
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
 <iframe 
   id='testimonialto-vansh-test-review-tag-all-light' 
-  src="https://testiview-frontend.vercel.app/wall?layout=fixed" 
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed${authParams}" 
   frameborder="0" 
   scrolling="no" 
   width="100%" 
@@ -81,8 +109,8 @@ const Wall = () => {
 `;
       case "carousel":
         return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
-                <iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel" frameborder="0" scrolling="no" width="100%"></iframe>
-                <script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
+<iframe id='testimonialto-carousel-vansh-test-review-tag-all-light' src="https://testiview-frontend.vercel.app/wall?layout=carousel${authParams}" frameborder="0" scrolling="no" width="100%"></iframe>
+<script type="text/javascript">iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');</script>`;
       default:
         return "";
     }
@@ -93,11 +121,10 @@ const Wall = () => {
   return (
     <div className="container mx-auto p-6 bg-gray-50 rounded-lg">
       <h1 className="text-2xl font-bold mb-6 text-center">Wall of Testimonials</h1>
-
       {/* Loading & Error Handling */}
       {loading && <div className="text-center">Loading testimonials...</div>}
       {error && <div className="text-center text-red-500">{error}</div>}
-
+      
       {/* Render Layouts */}
       {/* Fixed Layout */}
       {layout === "fixed" && !loading && !error && (
@@ -188,15 +215,17 @@ const Wall = () => {
         </div>
       )}
 
-      {/* Embed Code Section */}
-      <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Embed Code:</h2>
-        <div className="flex items-center">
-          <pre className="whitespace-pre-wrap p-2 bg-gray-200 rounded-lg text-sm flex-grow">
-            {embedCode}
-          </pre>
+      {/* Embed Code Section - Only show on user's own dashboard view */}
+      {(!searchParams.get("userId") || !searchParams.get("token")) && (
+        <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+          <h2 className="text-xl font-bold mb-4">Embed Code:</h2>
+          <div className="flex items-center">
+            <pre className="whitespace-pre-wrap p-2 bg-gray-200 rounded-lg text-sm flex-grow">
+              {embedCode}
+            </pre>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
