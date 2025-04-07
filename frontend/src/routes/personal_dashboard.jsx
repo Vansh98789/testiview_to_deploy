@@ -120,6 +120,32 @@ const PersonalDashboard = ({ setIsLogin }) => {
                     </div>
                 )}
                 
+                {/* Reviews section */}
+                <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                    <h2 className="text-xl font-semibold mb-3">Reviews</h2>
+                    {loading ? (
+                        <p>Loading reviews...</p>
+                    ) : (
+                        <div>
+                            {reviews.length === 0 ? (
+                                <p>No reviews available.</p>
+                            ) : (
+                                reviews.map((review, index) => {
+                                    const authorName = review.author_name || "Unknown Author"; // Fallback to "Unknown Author" if undefined
+                                    const content = review.content || "No content available."; // Fallback to "No content available" if undefined
+
+                                    return (
+                                        <div key={index} className="border-b mb-4 pb-4">
+                                            <h3 className="font-semibold text-lg">{authorName}</h3>
+                                            <p className="text-gray-700">{content}</p>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 {/* Embed code section */}
                 <div className="mb-6 p-4 bg-white rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-3">Your Embed Code</h2>
@@ -136,3 +162,19 @@ const PersonalDashboard = ({ setIsLogin }) => {
                         </button>
                         
                         <button
+                            onClick={handleOpenModal}
+                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+                        >
+                            Open Modal
+                        </button>
+                    </div>
+                </div>
+
+                {/* Modal for any additional action */}
+                {isModalOpen && <Modal onClose={handleCloseModal} />}
+            </div>
+        </>
+    );
+};
+
+export default PersonalDashboard;
