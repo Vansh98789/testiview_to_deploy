@@ -12,24 +12,16 @@ function Login() {
 
         try {
             const response = await axios.post("https://testiview-backend.vercel.app/login", { email, password });
-
             if (response.status === 200) {
-                const { userId, token } = response.data;
-
-                const userData = {
-                    id: userId,
-                    email,
-                    token, // ✅ Save the token from backend
-                };
-
-                localStorage.setItem("user", JSON.stringify(userData));
+                const userData = { id: response.data.userId, email }; // Store user ID
+                localStorage.setItem('user', JSON.stringify(userData)); // Save to local storage
                 navigate("/dashboard"); // Redirect to the dashboard
             } else {
                 alert("Login failed. Please try again.");
             }
         } catch (error) {
             console.error("Error during login:", error);
-            alert(error.response?.data || "An error occurred during login.");
+            alert(error.response?.data || "An error occurred during login."); // Show server message if available
         }
     };
 
