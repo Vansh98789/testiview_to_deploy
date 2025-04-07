@@ -5,16 +5,17 @@ import axios from "axios";
 function Signup() {
     const [email, setEmail] = useState(""); 
     const [password, setPassword] = useState(""); 
-    const [loading, setLoading] = useState(false); 
-    const [error, setError] = useState(""); 
+    const [loading, setLoading] = useState(false);  // For loading state
+    const [error, setError] = useState("");  // For error state
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         setLoading(true);
-        setError("");
+        setError("");  // Reset any previous error messages
 
+        // Simple client-side validation (you can extend this)
         if (!email || !password) {
             setError("Both email and password are required.");
             setLoading(false);
@@ -25,11 +26,7 @@ function Signup() {
             const response = await axios.post("https://testiview-backend.vercel.app/signup", { email, password });
 
             if (response.status === 201) {
-                const { userId, token } = response.data;
-                
-                // Save JWT and user info to localStorage
-                localStorage.setItem("user", JSON.stringify({ id: userId, email, token }));
-
+                // You can show a success message here if needed
                 alert("Signup successful! Redirecting to your dashboard...");
                 navigate("/dashboard");
             } else {
@@ -37,9 +34,8 @@ function Signup() {
             }
         } catch (error) {
             console.error("Error signing up:", error);
-            setError(error.response?.data || "An error occurred during signup. Please try again.");
+            setError("An error occurred during signup. Please try again.");
         }
-
         setLoading(false);
     };
 
@@ -47,6 +43,7 @@ function Signup() {
         <div className="max-w-md mx-auto mt-20 p-6 border border-gray-300 rounded-lg shadow-lg bg-white">
             <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
 
+            {/* Error Message */}
             {error && (
                 <div className="text-red-500 text-center mb-4">{error}</div>
             )}
@@ -80,8 +77,8 @@ function Signup() {
 
                 <button 
                     type="submit" 
-                    className={`w-full ${loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white p-2 rounded-md transition duration-200`}
-                    disabled={loading}
+                    className={`w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition duration-200 ${loading ? 'cursor-not-allowed bg-gray-500' : ''}`}
+                    disabled={loading} // Disable button when loading
                 >
                     {loading ? "Signing Up..." : "Sign Up"}
                 </button>
