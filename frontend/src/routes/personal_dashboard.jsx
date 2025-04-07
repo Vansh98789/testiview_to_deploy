@@ -130,12 +130,17 @@ const PersonalDashboard = ({ setIsLogin }) => {
                             {reviews.length === 0 ? (
                                 <p>No reviews available.</p>
                             ) : (
-                                reviews.map((review, index) => (
-                                    <div key={index} className="border-b mb-4 pb-4">
-                                        <h3 className="font-semibold text-lg">{review.author_name}</h3>
-                                        <p className="text-gray-700">{review.content}</p>
-                                    </div>
-                                ))
+                                reviews.map((review, index) => {
+                                    const authorName = review.author_name || "Unknown Author"; // Fallback to "Unknown Author" if undefined
+                                    const content = review.content || "No content available."; // Fallback to "No content available" if undefined
+
+                                    return (
+                                        <div key={index} className="border-b mb-4 pb-4">
+                                            <h3 className="font-semibold text-lg">{authorName}</h3>
+                                            <p className="text-gray-700">{content}</p>
+                                        </div>
+                                    );
+                                })
                             )}
                         </div>
                     )}
