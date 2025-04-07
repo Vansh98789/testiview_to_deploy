@@ -8,6 +8,7 @@ function Response() {
     const [experience, setExperience] = useState("");
     const [specifyChange, setSpecifyChange] = useState("");
     const [videoUrl, setVideoUrl] = useState("");
+    const [rating, setRating] = useState(""); // Optional field
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -18,13 +19,13 @@ function Response() {
 
         const user = JSON.parse(localStorage.getItem('user'));
 
-        if (!user || !user.id) {
+        if (!user || !user.userId) {
             setError("You must be logged in to submit a response.");
             setLoading(false);
             return;
         }
 
-        const userId = user.id;
+        const userId = user.userId;
 
         // Basic Validation
         if (!name || !workDone || !experience || !specifyChange) {
@@ -34,13 +35,22 @@ function Response() {
         }
 
         try {
-            const response = await axios.post("https://testiview-backend.vercel.app/response", {
-                user_id: userId,
-                name,
-                experience,
-                specific_change: specifyChange,
-                video_url: videoUrl || null // Ensure the video URL is optional
-            });
+            const response = await axios.post(
+                "https://testiview-backend.vercel.app/response",
+                {
+                    user_id: userId,
+                    name,
+                    experience,
+                    specific_change: specifyChange,
+                    video_url: videoUrl || null,
+                    rating: rating || null
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${user.token}`
+                    }
+                }
+            );
 
             // Retrieve existing reviews from localStorage
             const reviews = JSON.parse(localStorage.getItem('reviews')) || [];
@@ -51,14 +61,13 @@ function Response() {
                 review: experience,
                 name: name,
                 submittedAt: new Date().toLocaleDateString(),
-                email: user.email, // Ensure email is available
+                email: user.email,
                 videoUrl: videoUrl,
+                rating: rating || null
             };
 
-            // Add new review to existing reviews
             reviews.push(newReview);
 
-            // Save updated reviews back to localStorage
             localStorage.setItem('reviews', JSON.stringify(reviews));
 
             // Reset the form fields
@@ -67,6 +76,7 @@ function Response() {
             setExperience("");
             setSpecifyChange("");
             setVideoUrl("");
+            setRating("");
 
             alert("Response submitted successfully!");
         } catch (error) {
@@ -98,40 +108,79 @@ function Response() {
                 <form onSubmit={handleSubmit}>
                     <h2 className="text-xl font-bold mb-4">Feedback Form</h2>
 
-                    {/* Error message */}
                     {error && (
                         <div className="text-red-500 text-center mb-4">{error}</div>
                     )}
 
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your Name</label>
-                    <input type="text" id="name" placeholder="Enter your name" 
-                        value={name} onChange={(e) => setName(e.target.value)} 
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required
+                    />
 
                     <label htmlFor="workDone" className="block text-sm font-medium text-gray-700 mt-4">Please specify the work we have done for you:</label>
-                    <input type="text" id="workDone" placeholder="Describe the work" 
-                        value={workDone} onChange={(e) => setWorkDone(e.target.value)} 
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+                    <input
+                        type="text"
+                        id="workDone"
+                        placeholder="Describe the work"
+                        value={workDone}
+                        onChange={(e) => setWorkDone(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required
+                    />
 
                     <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mt-4">Please specify the overall experience:</label>
-                    <input type="text" id="experience" placeholder="Share your experience" 
-                        value={experience} onChange={(e) => setExperience(e.target.value)} 
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+                    <input
+                        type="text"
+                        id="experience"
+                        placeholder="Share your experience"
+                        value={experience}
+                        onChange={(e) => setExperience(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required
+                    />
 
                     <label htmlFor="changes" className="block text-sm font-medium text-gray-700 mt-4">Please specify the changes you want in our services:</label>
-                    <input type="text" id="changes" placeholder="List any changes" 
-                        value={specifyChange} onChange={(e) => setSpecifyChange(e.target.value)} 
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required />
+                    <input
+                        type="text"
+                        id="changes"
+                        placeholder="List any changes"
+                        value={specifyChange}
+                        onChange={(e) => setSpecifyChange(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        required
+                    />
 
                     <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-700 mt-4">Video Url (If any)</label>
-                    <input type="text" id="videoUrl" placeholder="Enter video URL" 
-                        value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} 
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" />
+                    <input
+                        type="text"
+                        id="videoUrl"
+                        placeholder="Enter video URL"
+                        value={videoUrl}
+                        onChange={(e) => setVideoUrl(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    />
 
-                    {/* Submit button */}
-                    <button 
-                        type="submit" 
-                        className={`mt-6 w-full ${loading ? 'bg-gray-500' : 'bg-blue-500'} text-white font-semibold py-2 rounded-md hover:bg-blue-600 ${loading ? 'cursor-not-allowed' : ''}`} 
+                    <label htmlFor="rating" className="block text-sm font-medium text-gray-700 mt-4">Rating (out of 5)</label>
+                    <input
+                        type="number"
+                        id="rating"
+                        placeholder="Enter rating"
+                        value={rating}
+                        onChange={(e) => setRating(e.target.value)}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        min="1"
+                        max="5"
+                    />
+
+                    <button
+                        type="submit"
+                        className={`mt-6 w-full ${loading ? 'bg-gray-500' : 'bg-blue-500'} text-white font-semibold py-2 rounded-md hover:bg-blue-600 ${loading ? 'cursor-not-allowed' : ''}`}
                         disabled={loading}
                     >
                         {loading ? 'Submitting...' : 'Submit'}
