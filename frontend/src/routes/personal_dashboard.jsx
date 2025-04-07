@@ -156,15 +156,15 @@ const PersonalDashboard = ({ setIsLogin }) => {
                                 <div key={index} className="border rounded-lg p-4 bg-gray-50">
                                     <div className="flex items-center mb-3">
                                         <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                                            {review.name ? review.name.charAt(0).toUpperCase() : "A"}
+                                            {review.author_name ? review.name.charAt(0).toUpperCase() : "A"}
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold">{review.name || "Anonymous"}</h3>
+                                            <h3 className="font-semibold">{review.author_name || "Anonymous"}</h3>
                                             <p className="text-sm text-gray-500">{new Date(review.created_at).toLocaleDateString()}</p>
                                         </div>
                                     </div>
                                     
-                                    <p className="mb-3">{review.testimonial}</p>
+                                    <p className="mb-3">{review.content}</p>
                                     
                                     {review.video_url && (
                                         <div className="aspect-w-16 aspect-h-9 mt-3">
