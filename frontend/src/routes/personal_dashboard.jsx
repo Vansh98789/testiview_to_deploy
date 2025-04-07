@@ -1,19 +1,30 @@
 import React, { useEffect, useState } from "react";
 import ReactPlayer from 'react-player';
-import axios from 'axios'; // Make sure axios is imported
+import axios from 'axios';
 import Modal from "../components/modal";
 
 const PersonalDashboard = ({ setIsLogin }) => {
     const [reviews, setReviews] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [embedToken, setEmbedToken] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         setIsLogin(true);
         const user = JSON.parse(localStorage.getItem('user'));
-
+        const token = localStorage.getItem('embedToken');
+        
+        if (token) {
+            setEmbedToken(token);
+        }
+        
         if (user && user.id) {
             // Send the user ID to the backend to fetch reviews
             fetchReviews(user.id);
+        } else {
+            setLoading(false);
+            setError("Please log in to view your dashboard");
         }
     }, [setIsLogin]);
 
@@ -25,18 +36,73 @@ const PersonalDashboard = ({ setIsLogin }) => {
                     userId: userId, // Send userId as a query parameter
                 }
             });
-
+            
             // Assuming the response contains reviews data
             if (response.status === 200) {
                 setReviews(response.data); // Set the reviews in state
             }
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching reviews:", error);
+            setError("Error loading reviews: " + (error.response?.data || error.message));
+            setLoading(false);
         }
     };
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
+    
+    // Function to regenerate embed token
+    const regenerateToken = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) {
+            setError("User not logged in");
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            const response = await axios.post("https://testiview-backend.vercel.app/generate-embed-token", {
+                userId: user.id
+            });
+            
+            if (response.status === 200 && response.data.embedToken) {
+                localStorage.setItem('embedToken', response.data.embedToken);
+                setEmbedToken(response.data.embedToken);
+                alert("New embed token generated successfully!");
+            }
+        } catch (error) {
+            console.error("Error generating token:", error);
+            setError("Failed to generate new token");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // Function to create embed code with current token
+    const getEmbedCode = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id || !embedToken) {
+            return "Please log in and generate an embed token first.";
+        }
+        
+        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
+<iframe 
+  id="testimonialto-embed"
+  src="https://testiview-frontend.vercel.app/wall?layout=fixed&userId=${user.id}&token=${embedToken}" 
+  frameborder="0" 
+  scrolling="no" 
+  width="100%" 
+  style="height: 800px; border: none;"
+></iframe>
+<script type="text/javascript">
+  iFrameResize({
+    log: false,
+    checkOrigin: false,
+    warningTimeout: 15000
+  }, '#testimonialto-embed');
+</script>`;
+    };
 
     return (
         <>
@@ -46,55 +112,27 @@ const PersonalDashboard = ({ setIsLogin }) => {
                     Your space form URL: 
                     <a href="https://testiview-frontend.vercel.app/formm" className="text-blue-600 underline"> https://testiview-frontend.vercel.app/formm</a>
                 </p>
-
-                {/* Button - Improved responsiveness */}
-                <div className="flex justify-center mb-6">
-                    <button 
-                        onClick={handleOpenModal} 
-                        className="bg-purple-500 text-white px-6 py-3 rounded hover:bg-purple-700 transition duration-200"
-                    >
-                        Create Your own Wall of Testimonial
-                    </button>
-                </div>
-
-                <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
-
-                {/* Total Reviews */}
-                <h2 className="text-xl font-semibold mb-4">Total Reviews: {reviews.length}</h2>
-
-                {reviews.length > 0 ? (
-                    reviews.map((review, index) => (
-                        <div key={index} className="review-item bg-white p-4 rounded-lg shadow mb-4">
-                            <div className="flex flex-col md:flex-row justify-between">
-                                <div className="flex-1 mb-4 md:mb-0">
-                                    <p><strong>Name:</strong> {review.author_name}</p>
-                                     <p className="font-medium">Review: {review.content}</p>
-                                    <p><strong>Submitted At:</strong> {review.created_at}</p>
-                                   
-                                </div>
-
-                                {/* Video Section */}
-                                <div className="video-container mt-4 md:mt-0 md:w-1/3 md:ml-4">
-                                    {review.video_url ? (
-                                        <ReactPlayer 
-                                            url={review.video_url} 
-                                            controls 
-                                            width="100%" 
-                                            height="200px" 
-                                        />
-                                    ) : (
-                                        <p className="text-red-500">No video response available.</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-center text-gray-500">No reviews yet.</p>
+                
+                {/* Error display */}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
                 )}
-            </div>
-        </>
-    );
-};
-
-export default PersonalDashboard;
+                
+                {/* Embed code section */}
+                <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                    <h2 className="text-xl font-semibold mb-3">Your Embed Code</h2>
+                    <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">
+                        {getEmbedCode()}
+                    </pre>
+                    <div className="mt-3 flex justify-between">
+                        <button 
+                            onClick={regenerateToken}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Regenerate Embed Token"}
+                        </button>
+                        
+                        <button
