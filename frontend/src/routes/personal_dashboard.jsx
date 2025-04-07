@@ -120,6 +120,27 @@ const PersonalDashboard = ({ setIsLogin }) => {
                     </div>
                 )}
                 
+                {/* Reviews section */}
+                <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                    <h2 className="text-xl font-semibold mb-3">Reviews</h2>
+                    {loading ? (
+                        <p>Loading reviews...</p>
+                    ) : (
+                        <div>
+                            {reviews.length === 0 ? (
+                                <p>No reviews available.</p>
+                            ) : (
+                                reviews.map((review, index) => (
+                                    <div key={index} className="border-b mb-4 pb-4">
+                                        <h3 className="font-semibold text-lg">{review.author_name}</h3>
+                                        <p className="text-gray-700">{review.content}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 {/* Embed code section */}
                 <div className="mb-6 p-4 bg-white rounded-lg shadow">
                     <h2 className="text-xl font-semibold mb-3">Your Embed Code</h2>
@@ -135,76 +156,18 @@ const PersonalDashboard = ({ setIsLogin }) => {
                             {loading ? "Processing..." : "Regenerate Embed Token"}
                         </button>
                         
-                        <button 
-                            onClick={handleOpenModal} 
-                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                        <button
+                            onClick={handleOpenModal}
+                            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
                         >
-                            View Embed Instructions
+                            Open Modal
                         </button>
                     </div>
                 </div>
-                
-                {/* Reviews section */}
-                <div className="bg-white rounded-lg shadow p-4">
-                    <h2 className="text-xl font-semibold mb-4">Your Testimonials</h2>
-                    
-                    {loading ? (
-                        <p className="text-center py-4">Loading your testimonials...</p>
-                    ) : reviews.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {reviews.map((review, index) => (
-                                <div key={index} className="border rounded-lg p-4 bg-gray-50">
-                                    <div className="flex items-center mb-3">
-                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                                            {review.author_name ? review.name.charAt(0).toUpperCase() : "A"}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold">{review.author_name || "Anonymous"}</h3>
-                                            <p className="text-sm text-gray-500">{new Date(review.created_at).toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <p className="mb-3">{review.content}</p>
-                                    
-                                    {review.video_url && (
-                                        <div className="aspect-w-16 aspect-h-9 mt-3">
-                                            <ReactPlayer
-                                                url={review.video_url}
-                                                width="100%"
-                                                height="100%"
-                                                controls
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-center py-4 text-gray-500">No testimonials yet. Share your form link to collect testimonials.</p>
-                    )}
-                </div>
+
+                {/* Modal for any additional action */}
+                {isModalOpen && <Modal onClose={handleCloseModal} />}
             </div>
-            
-            {/* Modal for embed instructions */}
-            <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                <h2 className="text-2xl font-bold mb-4">How to Embed Testimonials</h2>
-                <p className="mb-4">
-                    Copy the code above and paste it into your website where you want the testimonials to appear.
-                </p>
-                <h3 className="text-lg font-semibold mb-2">Instructions:</h3>
-                <ol className="list-decimal pl-5 mb-4">
-                    <li className="mb-2">Copy the entire embed code above</li>
-                    <li className="mb-2">Paste it into your website's HTML where you want the testimonials to show</li>
-                    <li className="mb-2">The testimonials will automatically appear and update when new ones are added</li>
-                    <li className="mb-2">If you regenerate your token, you'll need to update the embed code on your site</li>
-                </ol>
-                <button
-                    onClick={handleCloseModal}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                >
-                    Close
-                </button>
-            </Modal>
         </>
     );
 };
