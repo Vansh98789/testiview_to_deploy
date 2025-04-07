@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the backend API");
 });
 
+// Signup Route
 app.post("/signup", async (req, res) => {
   const { email, password } = req.body; 
 
@@ -53,6 +54,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Login Route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -83,6 +85,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Submit Testimonial Response
 app.post("/response", async (req, res) => {
   const { user_id, name, experience, specific_change, video_url, rating } = req.body;
 
@@ -109,6 +112,7 @@ app.post("/response", async (req, res) => {
   }
 });
 
+// Fetch testimonials (for logged-in users)
 app.get("/testimonials", async (req, res) => {
   const userId = req.query.userId;
 
@@ -127,11 +131,20 @@ app.get("/testimonials", async (req, res) => {
   }
 });
 
+// Secure Wall of Testimonials (with token from header)
 app.get("/testimonials-wall", async (req, res) => {
-  const { userId, token } = req.query;
+  const userId = req.query.userId;
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).send("Unauthorized - Token missing or malformed");
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+
     if (decoded.userId !== parseInt(userId)) {
       return res.status(403).send("Invalid token or user ID mismatch");
     }
