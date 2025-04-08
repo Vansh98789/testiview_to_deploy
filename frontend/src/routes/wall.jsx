@@ -11,6 +11,7 @@ const Wall = () => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [embedToken, setEmbedToken] = useState("");
 
   // Fetch layout and authentication params from URL
   useEffect(() => {
@@ -50,7 +51,8 @@ const Wall = () => {
           }
           
           const userId = user.id;
-          const embedToken = localStorage.getItem("embedToken");
+          const storedEmbedToken = localStorage.getItem("embedToken");
+          setEmbedToken(storedEmbedToken || "");
           
           console.log(`Fetching testimonials for userId: ${userId}`);
           const apiUrl = 
@@ -81,10 +83,10 @@ const Wall = () => {
   const getEmbedCode = () => {
     // Get user info from localStorage
     const user = JSON.parse(localStorage.getItem("user"));
-    const embedToken = localStorage.getItem("embedToken");
+    const currentEmbedToken = embedToken || localStorage.getItem("embedToken");
     const userId = user?.id;
     // Only include authentication if we have both userId and token
-    const authParams = userId && embedToken ? `&userId=${userId}&token=${embedToken}` : '';
+    const authParams = userId && currentEmbedToken ? `&userId=${userId}&token=${currentEmbedToken}` : '';
     
     switch (layout) {
       case "animated":
@@ -94,7 +96,8 @@ const Wall = () => {
   src="https://testiview-frontend.vercel.app/wall?layout=animated${authParams}" 
   frameborder="0" 
   scrolling="no" 
-  width="100%">
+  width="100%" 
+  style="min-height: 500px;">
 </iframe>
 <script type="text/javascript">
   iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light-animated');
@@ -108,7 +111,7 @@ const Wall = () => {
   frameborder="0" 
   scrolling="no" 
   width="100%" 
-  style="height: 800px;">
+  style="min-height: 800px;">
 </iframe>
 <script type="text/javascript">
   iFrameResize({log: false, checkOrigin: false}, '#testimonialto-vansh-test-review-tag-all-light');
@@ -121,7 +124,8 @@ const Wall = () => {
   src="https://testiview-frontend.vercel.app/wall?layout=carousel${authParams}" 
   frameborder="0" 
   scrolling="no" 
-  width="100%">
+  width="100%" 
+  style="min-height: 400px;">
 </iframe>
 <script type="text/javascript">
   iFrameResize({log: false, checkOrigin: false}, '#testimonialto-carousel-vansh-test-review-tag-all-light');
@@ -129,6 +133,36 @@ const Wall = () => {
 
       default:
         return "";
+    }
+  };
+
+  // Function to regenerate embed token
+  const regenerateEmbedToken = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user || !user.id) {
+        throw new Error("User not found. Please log in first.");
+      }
+      
+      const response = await fetch("https://testiview-backend.vercel.app/generate-embed-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: user.id }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to generate token: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      localStorage.setItem("embedToken", data.token);
+      setEmbedToken(data.token);
+      alert("Embed token has been regenerated successfully!");
+    } catch (err) {
+      console.error("Error regenerating token:", err);
+      alert("Failed to regenerate token: " + err.message);
     }
   };
 
@@ -167,12 +201,13 @@ const Wall = () => {
 
       {/* Animated Layout */}
       {layout === "animated" && !loading && !error && (
-        <div className="overflow-hidden relative">
+        <div className="overflow-hidden relative min-h-screen">
           <div className="flex flex-wrap justify-center">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-purple-100 p-4 rounded-lg shadow-lg animate-slide-up w-1/4 mx-2 my-4"
+                className="bg-purple-100 p-4 rounded-lg shadow-lg animate-slide-up w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mx-2 my-4"
+                style={{animationDelay: `${index * 0.2}s`}}
               >
                 <p className="font-bold text-purple-700">{testimonial.content}</p>
                 <p className="text-purple-600">- {testimonial.author_name}</p>
@@ -194,7 +229,7 @@ const Wall = () => {
 
       {/* Carousel Layout */}
       {layout === "carousel" && !loading && !error && (
-        <div className="relative w-full max-w-4xl mx-auto mt-10">
+        <div className="relative w-full max-w-4xl mx-auto mt-10 min-h-96">
           {/* Carousel (react-slick) */}
           <Slider
             dots={true}
@@ -235,7 +270,15 @@ const Wall = () => {
       {/* Embed Code Section - Only show on user's own dashboard view */}
       {(!searchParams.get("userId") || !searchParams.get("token")) && (
         <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Embed Code:</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Embed Code:</h2>
+            <button 
+              onClick={regenerateEmbedToken}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              Regenerate Embed Token
+            </button>
+          </div>
           <div className="flex items-center">
             <pre className="whitespace-pre-wrap overflow-x-auto p-2 bg-gray-200 rounded-lg text-sm w-full">
               {embedCode}
