@@ -6,16 +6,16 @@ function Main1() {
     <>
       <div className="mb-8 px-4 md:px-8 lg:px-16">
         {/* Heading Text */}
-        <p className='text-4xl sm:text-5xl text-center font-bold mt-12'>
+        <p className="text-4xl sm:text-5xl text-center font-bold mt-12">
           Get testimonials from Customers
           <br />
-          <span className="block sm:text-center"> & </span>
+          <span className="block text-center"> & </span>
           <br />
-          <span className="text-center sm:text-left">Enhance your business</span>
+          <span className="text-center">Enhance your business</span>
         </p>
         
         {/* Description Text */}
-        <p className="font-bold mt-4 text-center sm:text-left ml-10">
+        <p className="font-bold mt-4 text-center">
           Using this, you can collect all your reviews in one place and simply attach them to your own
           website using a simple line of code.
         </p>
@@ -25,7 +25,7 @@ function Main1() {
           <img
             src={img}
             alt="dashboard photo"
-            className="h-[40rem] w-[80%] sm:w-[70%] lg:w-[60%] object-cover"
+            className="h-96 w-4/5 sm:w-3/4 lg:w-3/5 object-cover"
           />
         </div>
       </div>
