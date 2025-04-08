@@ -6,18 +6,12 @@ import Modal from "../components/modal";
 const PersonalDashboard = ({ setIsLogin }) => {
     const [reviews, setReviews] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [embedToken, setEmbedToken] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
         setIsLogin(true);
         const user = JSON.parse(localStorage.getItem('user'));
-        const token = localStorage.getItem('embedToken');
-
-        if (token) {
-            setEmbedToken(token);
-        }
 
         if (user && user.id) {
             // Send the user ID to the backend to fetch reviews
@@ -33,7 +27,7 @@ const PersonalDashboard = ({ setIsLogin }) => {
         try {
             const response = await axios.get(`https://testiview-backend.vercel.app/testimonials`, {
                 params: {
-                    userId: userId, // Send userId as a query parameter
+                    userId: userId // Send userId as a query parameter
                 }
             });
 
@@ -52,58 +46,6 @@ const PersonalDashboard = ({ setIsLogin }) => {
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
-    // Function to regenerate embed token
-    const regenerateToken = async () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user.id) {
-            setError("User not logged in");
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const response = await axios.post("https://testiview-backend.vercel.app/generate-embed-token", {
-                userId: user.id
-            });
-
-            if (response.status === 200 && response.data.embedToken) {
-                localStorage.setItem('embedToken', response.data.embedToken);
-                setEmbedToken(response.data.embedToken);
-                alert("New embed token generated successfully!");
-            }
-        } catch (error) {
-            console.error("Error generating token:", error);
-            setError("Failed to generate new token");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Function to create embed code with current token
-    const getEmbedCode = () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user.id || !embedToken) {
-            return "Please log in and generate an embed token first.";
-        }
-
-        return `<script type="text/javascript" src="https://testimonial.to/js/iframeResizer.min.js"></script>
- <iframe 
-   id="testimonialto-embed"
-   src="https://testiview-frontend.vercel.app/wall?layout=fixed&userId=${user.id}&token=${embedToken}" 
-   frameborder="0" 
-   scrolling="no" 
-   width="100%" 
-   style="height: 800px; border: none;"
- ></iframe>
- <script type="text/javascript">
-   iFrameResize({
-     log: false,
-     checkOrigin: false,
-     warningTimeout: 15000
-   }, '#testimonialto-embed');
- </script>`;
-    };
-
     return (
         <>
             <div className="container mx-auto p-6 bg-gray-50 rounded-lg shadow-md max-w-screen-lg">
@@ -120,26 +62,16 @@ const PersonalDashboard = ({ setIsLogin }) => {
                     </div>
                 )}
 
-                {/* Embed code section */}
+                {/* Instructions Card */}
                 <div className="mb-6 p-4 bg-white rounded-lg shadow">
-                    <h2 className="text-xl font-semibold mb-3">Your Embed Code</h2>
-                    <pre className="bg-gray-100 p-3 rounded-md overflow-x-auto text-sm">
-                        {getEmbedCode()}
-                    </pre>
-                    <div className="mt-3 flex justify-between">
-                        <button 
-                            onClick={regenerateToken}
-                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-                            disabled={loading}
-                        >
-                            {loading ? "Processing..." : "Regenerate Embed Token"}
-                        </button>
-             
+                    <h2 className="text-xl font-semibold mb-3">Share Your Form</h2>
+                    <p className="mb-4">Share your form link with customers to collect testimonials. Once collected, they will appear below.</p>
+                    <div className="mt-3 flex justify-end">
                         <button 
                             onClick={handleOpenModal} 
                             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
                         >
-                            View Embed Instructions
+                            View Instructions
                         </button>
                     </div>
                 </div>
@@ -190,18 +122,19 @@ const PersonalDashboard = ({ setIsLogin }) => {
                 </div>
             </div>
             
-            {/* Modal for embed instructions */}
+            {/* Modal for instructions */}
             <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-                <h2 className="text-2xl font-bold mb-4">How to Embed Testimonials</h2>
+                <h2 className="text-2xl font-bold mb-4">How to Collect Testimonials</h2>
                 <p className="mb-4">
-                    Copy the code above and paste it into your website where you want the testimonials to appear.
+                    Follow these steps to collect testimonials from your customers:
                 </p>
                 <h3 className="text-lg font-semibold mb-2">Instructions:</h3>
                 <ol className="list-decimal pl-5 mb-4">
-                    <li className="mb-2">Copy the entire embed code above</li>
-                    <li className="mb-2">Paste it into your website's HTML where you want the testimonials to show</li>
-                    <li className="mb-2">The testimonials will automatically appear and update when new ones are added</li>
-                    <li className="mb-2">If you regenerate your token, you'll need to update the embed code on your site</li>
+                    <li className="mb-2">Copy your form URL: <span className="text-blue-600">https://testiview-frontend.vercel.app/formm</span></li>
+                    <li className="mb-2">Share this URL with your customers via email, social media, or your website</li>
+                    <li className="mb-2">Customers can visit the link and submit their testimonials</li>
+                    <li className="mb-2">All submissions will automatically appear in your dashboard</li>
+                    <li className="mb-2">You can view both text and video testimonials in this dashboard</li>
                 </ol>
                 <button
                     onClick={handleCloseModal}
