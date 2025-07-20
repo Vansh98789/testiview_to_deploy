@@ -6,26 +6,44 @@ function Signup() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
+        setError("");  // Reset any previous error messages
 
-        // Simple client-side validation
+        // Simple client-side validation (you can extend this)
         if (!email || !password) {
             setError("Both email and password are required.");
             setLoading(false);
             return;
         }
 
-        // Demo: simulate API call
-        setTimeout(() => {
-            console.log("Signup attempt:", { email, password });
-            setLoading(false);
-            // In your actual app, replace this with your axios call and navigation logic
-        }, 2000);
+        try {
+            const response = await axios.post("https://testiview-backend.vercel.app/signup", { email, password });
+            
+            if (response.status === 201) {
+                // Store user info and embed token
+                const userData = { id: response.data.userId, email };
+                localStorage.setItem('user', JSON.stringify(userData));
+                
+                // Store the embed token separately
+                if (response.data.embedToken) {
+                    localStorage.setItem('embedToken', response.data.embedToken);
+                }
+                
+                // You can show a success message here if needed
+                alert("Signup successful! Redirecting to your dashboard...");
+                navigate("/dashboard");
+            } else {
+                setError("Signup failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error signing up:", error);
+            setError(error.response?.data || "An error occurred during signup. Please try again.");
+        }
+        
+        setLoading(false);
     };
-
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
