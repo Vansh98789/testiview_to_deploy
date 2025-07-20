@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import imgg from '../images/imggg.png';
 function Footer() {
   const [hoveredSection, setHoveredSection] = useState(null);
 
@@ -43,7 +43,7 @@ function Footer() {
             <div className="flex items-center mb-6 group">
               <div className="relative">
                 <img 
-                  src="/api/placeholder/48/48" 
+                  src={imgg}
                   alt="Logo" 
                   className="h-12 w-12 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105" 
                 />
