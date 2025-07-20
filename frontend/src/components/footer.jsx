@@ -163,25 +163,7 @@ function Footer() {
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-16 pt-8 border-t border-white/20">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-purple-200 text-sm mb-4 md:mb-0">
-              Built with ❤️ for better customer testimonials
-            </div>
-            <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-purple-200 hover:text-white transition-colors duration-300">
-                Status
-              </a>
-              <a href="#" className="text-purple-200 hover:text-white transition-colors duration-300">
-                API Docs
-              </a>
-              <a href="#" className="text-purple-200 hover:text-white transition-colors duration-300">
-                Support
-              </a>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </footer>
   );
