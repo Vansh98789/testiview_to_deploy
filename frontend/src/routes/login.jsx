@@ -6,24 +6,34 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
         
-        // Simple client-side validation
-        if (!email || !password) {
-            setError("Both email and password are required.");
-            setLoading(false);
-            return;
+        try {
+            const response = await axios.post("https://testiview-backend.vercel.app/login", { email, password });
+            
+            if (response.status === 200) {
+                // Store user data
+                const userData = { id: response.data.userId, email };
+                localStorage.setItem('user', JSON.stringify(userData));
+                
+                // Store the embed token separately
+                if (response.data.embedToken) {
+                    localStorage.setItem('embedToken', response.data.embedToken);
+                }
+                
+                navigate("/dashboard"); // Redirect to the dashboard
+            } else {
+                setError("Login failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            setError(error.response?.data || "An error occurred during login.");
         }
-
-        // Demo: simulate API call
-        setTimeout(() => {
-            console.log("Login attempt:", { email, password });
-            setLoading(false);
-            // In your actual app, replace this with your axios call and navigation logic
-        }, 2000);
+        
+        setLoading(false);
     };
 
     return (
