@@ -85,11 +85,7 @@ function Navbar({ isLogin, setIsLogin }) {
                     <div className="md:hidden flex items-center space-x-2">
                         {isLogin ? (
                             <div className="flex items-center space-x-2">
-                                <img 
-                                    src={imggg}
-                                    className="w-8 h-8 rounded-full border border-white/30" 
-                                    alt="Profile" 
-                                />
+                                
                                 <button 
                                     onClick={handleLogout} 
                                     className="bg-white/10 hover:bg-red-500 text-white px-3 py-2 rounded-full text-xs font-medium transition-all duration-300"
