@@ -52,10 +52,11 @@ function Login() {
             
             if (response.status === 200) {
                 const userData = { id: response.data.userId, email };
-                localStorage.setItem('user', JSON.stringify(userData));
+                // Note: localStorage is not available in Claude artifacts
+                // localStorage.setItem('user', JSON.stringify(userData));
                 
                 if (response.data.embedToken) {
-                    localStorage.setItem('embedToken', response.data.embedToken);
+                    // localStorage.setItem('embedToken', response.data.embedToken);
                 }
                 
                 setSuccess(true);
@@ -132,12 +133,7 @@ function Login() {
                         </div>
                     )}
 
-                    {/* Demo credentials notice */}
-                    <div className="mb-6 p-4 bg-blue-50/80 border border-blue-200 rounded-2xl">
-                        <p className="text-blue-700 text-sm text-center">
-                            <span className="font-semibold">Demo:</span> test@example.com / password
-                        </p>
-                    </div>
+               
 
                     <div className="space-y-8">
                         {/* Email Field */}
@@ -229,7 +225,9 @@ function Login() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                     </svg>
                                 </>
-                            
+                            )}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Signup Link */}
